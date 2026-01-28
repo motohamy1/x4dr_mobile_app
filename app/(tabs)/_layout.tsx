@@ -27,7 +27,7 @@ export default function TabLayout() {
                 selected: '#ffffff',   // Selected color
             }}
         >
-            <NativeTabs.Trigger name="home">
+            <NativeTabs.Trigger name="index">
                 <Icon sf={{ default: 'house', selected: 'house.fill' }} drawable="ic_menu_home" />
                 <Label>Home</Label>
             </NativeTabs.Trigger>

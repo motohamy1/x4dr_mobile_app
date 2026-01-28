@@ -8,6 +8,9 @@ module.exports = {
       colors: {
         'brand-bg': '#f5f1e6',
         'brand-primary': '#7b011e',
+        'tbright': '#f5f1e6',
+        'tdark': '#7b011e',
+        'torange': '#fed7aa',
       }
     },
   },
