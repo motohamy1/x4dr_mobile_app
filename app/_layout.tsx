@@ -1,5 +1,6 @@
 import { DefaultTheme, ThemeProvider } from "@react-navigation/native";
 import { Stack } from "expo-router";
+import 'react-native-gesture-handler';
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { Colors } from "../constants/theme";
 import "../global.css";
