@@ -1,4 +1,5 @@
-import { Icon, Label, NativeTabs } from "expo-router/unstable-native-tabs";
+import { Ionicons } from "@expo/vector-icons";
+import { Icon, Label, NativeTabs, VectorIcon } from "expo-router/unstable-native-tabs";
 import { Colors } from "../../constants/theme";
 
 export default function TabLayout() {
@@ -28,27 +29,27 @@ export default function TabLayout() {
             }}
         >
             <NativeTabs.Trigger name="index">
-                <Icon sf={{ default: 'house', selected: 'house.fill' }} drawable="ic_menu_home" />
+                <Icon src={<VectorIcon family={Ionicons} name="home-outline" />} />
                 <Label>Home</Label>
             </NativeTabs.Trigger>
 
             <NativeTabs.Trigger name="courses">
-                <Icon sf={'book'} drawable="alert_dark_frame" />
+                <Icon src={<VectorIcon family={Ionicons} name="book" />} />
                 <Label>Courses</Label>
             </NativeTabs.Trigger>
 
             <NativeTabs.Trigger name="my_courses">
-                <Icon sf={'bell'} drawable="btn_star" />
+                <Icon src={<VectorIcon family={Ionicons} name="book-outline" />} />
                 <Label>My Courses</Label>
             </NativeTabs.Trigger>
 
             <NativeTabs.Trigger name="downloads">
-                <Icon sf={'person'} drawable="editbox_background" />
+                <Icon src={<VectorIcon family={Ionicons} name="download-outline" />} />
                 <Label>Downloads</Label>
             </NativeTabs.Trigger>
 
             <NativeTabs.Trigger name="my_profile">
-                <Icon sf={'gear'} drawable="ic_lock_lock" />
+                <Icon src={<VectorIcon family={Ionicons} name="person-outline" />} />
                 <Label>Profile</Label>
             </NativeTabs.Trigger>
         </NativeTabs>

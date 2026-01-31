@@ -7,7 +7,7 @@ import UpcomingCourse from '../components/UpcomingCourse'
 
 const HomePage = () => {
     return (
-        <ScrollView className="flex-1 bg-light-background safe-area-inset-top">
+        <ScrollView scrollEnabled={true} className="flex-1 bg-light-background safe-area-inset-top">
             <Header />
             <CurrentCourse />
             <ExploreCourses />

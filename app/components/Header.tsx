@@ -3,8 +3,7 @@ import { Image, Text, View } from 'react-native'
 
 const Header = () => {
     return (
-        <View className='safe-area-inset-top flex-row justify-between items-center mt-10 p-4 gap-2 
-                         border-b-2 border-[#7b011e] rounded-b-lg'>
+        <View className='safe-area-inset-top flex-row justify-between items-center mt-5 p-4 gap-2 rounded-b-lg'>
 
             <View className='flex justify-start items-center mt-4'>
                 <Text className='text-[#7b011e] text-2xl font-bold'>Welcome Back, </Text>
