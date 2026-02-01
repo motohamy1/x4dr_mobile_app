@@ -6,14 +6,14 @@ const Header = () => {
         <View className='safe-area-inset-top flex-row justify-between items-center mt-5 p-4 gap-2 rounded-b-lg'>
 
             <View className='flex justify-start items-center mt-4'>
-                <Text className='text-[#7b011e] text-2xl font-bold'>Welcome Back, </Text>
-                <Text className='text-light-text text-sm font-bold text-light-primary'>Mahmoud Eltohamy</Text>
+                <Text className='text-brand-primary text-2xl font-bold'>Welcome Back, </Text>
+                <Text className='text-light-text text-sm font-bold'>Mahmoud Eltohamy</Text>
             </View>
 
             <View className='flex justify-end items-center mt-2'>
                 <Image source={require('@/assets/images/android-icon-foreground.png')}
-                    className='w-10 h-10' />
-                <Text className='text-[#7b011e] text-xl font-bold'>X4DR</Text>
+                    className='w-10 h-10 rounded-full' />
+                <Text className='text-brand-primary text-xl font-bold'>X4DR</Text>
             </View>
 
         </View>

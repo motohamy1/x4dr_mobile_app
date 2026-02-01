@@ -10,14 +10,14 @@ interface DownloadItem {
     progress: number
     total: number
     progressPercent: number
-    thumbnail: string
+    thumbnail: any
 }
 
 interface OfflineCourse {
     id: string
     title: string
     lessons: number
-    thumbnail: string
+    thumbnail: any
     downloadedLessons: {
         id: string
         title: string
@@ -25,55 +25,26 @@ interface OfflineCourse {
     expanded: boolean
 }
 
+import { coursesData } from '../data/coursesData'
+
 const DownloadsPage = () => {
     const insets = useSafeAreaInsets()
 
     // State for accordion expansions
-    const [offlineCourses, setOfflineCourses] = useState<OfflineCourse[]>([
-        {
-            id: '1',
-            title: 'Hematology Basics',
-            lessons: 8,
-            thumbnail: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCr3W6_IcOTO6NQEa1mnKSK8LFEPqDwlTcQdI-ZRK_xHNw1Njz7HZ7SW3bVdeYBtDCZdqSieCyqtI-3RIpHi4xb8_uLE3rf_wMC7YOyoE400cGz0ynsvsSmx4qy68ocOyxa-sCYrxu-DplhpLDa-NRHVbr1Q-tsfjWZaQNo3fUtcaMx05Kx-zAeP_7oRGUmRSz_1J17zoD_H6rpwgn7pPHICCqv5SYcHcwfEdsTS-PUWNNJQDBdcLqapDDBrJKW6E6YbtJKCjDQY5s',
+    const [offlineCourses, setOfflineCourses] = useState<OfflineCourse[]>(
+        coursesData.slice(0, 4).map((course, index) => ({
+            id: course.id,
+            title: course.title,
+            lessons: course.lessons || 10,
+            thumbnail: course.image,
             downloadedLessons: [
-                { id: '1', title: 'Introduction to RBC Morphology' },
-                { id: '2', title: 'Anemia Classification' },
-                { id: '3', title: 'Platelet Disorders Deep Dive' },
+                { id: '1', title: 'Introduction' },
+                { id: '2', title: 'Key Concepts' },
+                { id: '3', title: 'Case Study 1' }
             ],
-            expanded: true,
-        },
-        {
-            id: '2',
-            title: 'Clinical Ethics Vol. 1',
-            lessons: 5,
-            thumbnail: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCr3W6_IcOTO6NQEa1mnKSK8LFEPqDwlTcQdI-ZRK_xHNw1Njz7HZ7SW3bVdeYBtDCZdqSieCyqtI-3RIpHi4xb8_uLE3rf_wMC7YOyoE400cGz0ynsvsSmx4qy68ocOyxa-sCYrxu-DplhpLDa-NRHVbr1Q-tsfjWZaQNo3fUtcaMx05Kx-zAeP_7oRGUmRSz_1J17zoD_H6rpwgn7pPHICCqv5SYcHcwfEdsTS-PUWNNJQDBdcLqapDDBrJKW6E6YbtJKCjDQY5s',
-            downloadedLessons: [
-                { id: '1', title: 'Patient Autonomy' },
-                { id: '2', title: 'Informed Consent Protocols' },
-            ],
-            expanded: false,
-        },
-        {
-            id: '3',
-            title: 'Neuroscience Deep Dive',
-            lessons: 12,
-            thumbnail: 'https://lh3.googleusercontent.com/aida-public/AB6AXuC13DWwpII9OjlVjN-C5brR3MPdDtao_HlW4GcLt4W3f7cNPWAtIVSlWibEeOGAbXOdKSd39JeUwSECsmbQFoQQe3iXzO23gtx0zta_OgPjvHxSugcsyuHL8Ek9ztyCCJghHdRBx38a-ebWq_fSMJ8-2WiG27_lMT6hqHTQn8w465uXpxRjy54oazfmOCBHTCK7vh_WQMbrzGHrmrzECcwLvIuprLlG7G4eOZs_QYNPlk-S_oCtNYzM3Gi3-m2kLslSEY5ECSlbpmw',
-            downloadedLessons: [
-                { id: '1', title: 'Neural Pathways Overview' },
-            ],
-            expanded: false,
-        },
-        {
-            id: '4',
-            title: 'ECG Interpretation',
-            lessons: 15,
-            thumbnail: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDxzkcUAluul4Zu3SSwx0uOCZdl71xLTHWdWOTlxX-Dnue4iCjgjIqwNsNrBHvcA8vxu7LERcQtBhfz6lp4NyLcLZicpihSndYo-ln1vT-GeRwjS8r7GPmIfFAmMtQO4cr80n7RZqu6KSOGw6-yjfQ7VXom152oA1ourwPExXZRvXSrHWk5-Qyra-xEfPkLtFOXBXmUymdMbskYjdsa6zB4QuxNbdxOOmMPadXx5Y30BQw6VQS55_gfMhV4HU8u4j-PuO1txmYxfOM',
-            downloadedLessons: [
-                { id: '1', title: 'Sinus Rhythms & Identification' },
-            ],
-            expanded: false,
-        },
-    ])
+            expanded: index === 0, // Expand the first one by default
+        }))
+    )
 
     const [activeDownload] = useState<DownloadItem>({
         id: '1',
@@ -81,7 +52,7 @@ const DownloadsPage = () => {
         progress: 4,
         total: 12,
         progressPercent: 38,
-        thumbnail: '',
+        thumbnail: null,
     })
 
     // Toggle accordion expansion
@@ -168,7 +139,7 @@ const DownloadsPage = () => {
                     </View>
 
                     {/* Course Accordions */}
-                    <View className="space-y-3">
+                    <View className="gap-3">
                         {offlineCourses.map((course) => (
                             <View
                                 key={course.id}
@@ -181,7 +152,7 @@ const DownloadsPage = () => {
                                     activeOpacity={0.7}
                                 >
                                     <Image
-                                        source={{ uri: course.thumbnail }}
+                                        source={course.thumbnail}
                                         className="w-12 h-12 rounded-xl border border-[#e5dfcf]"
                                         resizeMode="cover"
                                     />
@@ -212,11 +183,10 @@ const DownloadsPage = () => {
                                         {course.downloadedLessons.map((lesson, index) => (
                                             <View
                                                 key={lesson.id}
-                                                className={`flex-row items-center justify-between py-3 ${
-                                                    index < course.downloadedLessons.length - 1
-                                                        ? 'border-b border-[#f5f1e6]'
-                                                        : ''
-                                                }`}
+                                                className={`flex-row items-center justify-between py-3 ${index < course.downloadedLessons.length - 1
+                                                    ? 'border-b border-[#f5f1e6]'
+                                                    : ''
+                                                    }`}
                                             >
                                                 <View className="flex-row items-center gap-3">
                                                     <MaterialIcons

@@ -11,6 +11,8 @@ module.exports = {
         'tbright': '#f5f1e6',
         'tdark': '#7b011e',
         'torange': '#fed7aa',
+        'light-text': '#11181C',
+        'light-primary': '#7b011e',
       }
     },
   },

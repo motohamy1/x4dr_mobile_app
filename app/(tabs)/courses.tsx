@@ -1,7 +1,7 @@
 import React from 'react'
 import { ScrollView, Text, View } from 'react-native'
-import { CourseCard } from '../components/ui/CourseCard'
-import SearchBar from '../components/ui/SearchBar'
+import { CourseCard } from '../../components/ui/CourseCard'
+import SearchBar from '../../components/ui/SearchBar'
 import { coursesData } from '../data/coursesData'
 
 const courses = () => {
@@ -13,11 +13,9 @@ const courses = () => {
             </View>
             <SearchBar />
             <View className="mt-2 mb-28">
-                <CourseCard course={coursesData[0]} />
-                <CourseCard course={coursesData[1]} />
-                <CourseCard course={coursesData[2]} />
-                {/* <CourseCarousel />
-                <CourseCarousel /> */}
+                {coursesData.map((course) => (
+                    <CourseCard key={course.id} course={course} />
+                ))}
             </View>
         </ScrollView>
     )

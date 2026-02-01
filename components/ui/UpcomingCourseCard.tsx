@@ -25,7 +25,7 @@ const UpcomingCourseCard = () => {
     // const renderItem = ({ item }: { item: typeof dummyUpcomingCourses[0] }) => {
     return (
         <View
-            className='flex-row bg-brand-primary mx-6 rounded-3xl py-4 px-6 items-center gap-4'
+            className='flex-row bg-orange border-2 border-tdark mx-6 rounded-3xl py-4 px-6 items-center gap-4'
             style={{
                 width: windowWidth * 0.9,
                 height: 90,
@@ -37,16 +37,16 @@ const UpcomingCourseCard = () => {
                 paddingBottom: 12
             }}>
             <Image
-                source={require('../../../assets/images/icon.png')}
+                source={require('@/assets/images/icon.png')}
                 style={{ width: 40, height: 40 }}
                 resizeMode='contain'
             />
             <View className='flex-1'>
-                <Text className='font-semibold text-base text-torange'>{dummyUpcomingCourses[0].title}</Text>
+                <Text className='font-semibold text-base text-tdark'>{dummyUpcomingCourses[0].title}</Text>
                 <Text className='text-sm text-gray-500'>{dummyUpcomingCourses[0].date}</Text>
             </View>
-            <TouchableOpacity className='bg-brand-bg px-4 py-2 rounded-full justify-center'>
-                <Text className='text-tdark font-semibold text-sm'>Notify Me</Text>
+            <TouchableOpacity className='bg-tdark px-4 py-2 rounded-full justify-center'>
+                <Text className='text-torange font-semibold text-sm'>Notify Me</Text>
             </TouchableOpacity>
         </View>
     )

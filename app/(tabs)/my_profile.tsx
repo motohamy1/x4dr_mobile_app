@@ -7,7 +7,8 @@ const ProfilePage = () => {
     const insets = useSafeAreaInsets()
     const [personalInfoExpanded, setPersonalInfoExpanded] = useState(false)
     const [progressExpanded, setProgressExpanded] = useState(false)
-    const [animation] = useState(new Animated.Value(0))
+    const personalInfoAnimation = useState(new Animated.Value(0))[0]
+    const progressAnimation = useState(new Animated.Value(0))[0]
 
     return (
         <View className="flex-1 bg-brand-bg">
@@ -66,7 +67,7 @@ const ProfilePage = () => {
                 </View>
 
                 {/* Menu Options */}
-                <View className="px-4 space-y-2">
+                <View className="px-4 gap-2">
                     {/* Personal Information Accordion */}
                     <View className="bg-white rounded-2xl border border-[#e5dfcf] shadow-sm overflow-hidden">
                         {/* Accordion Header */}
@@ -74,10 +75,10 @@ const ProfilePage = () => {
                             className="w-full flex-row items-center justify-between p-4 active:scale-[0.99]"
                             onPress={() => {
                                 setPersonalInfoExpanded(!personalInfoExpanded)
-                                Animated.timing(animation, {
+                                Animated.timing(personalInfoAnimation, {
                                     toValue: personalInfoExpanded ? 0 : 1,
                                     duration: 300,
-                                    useNativeDriver: false,
+                                    useNativeDriver: true,
                                 }).start()
                             }}
                         >
@@ -90,7 +91,7 @@ const ProfilePage = () => {
                             <Animated.View
                                 style={{
                                     transform: [{
-                                        rotate: animation.interpolate({
+                                        rotate: personalInfoAnimation.interpolate({
                                             inputRange: [0, 1],
                                             outputRange: ['-90deg', '0deg'],
                                         }),
@@ -104,7 +105,7 @@ const ProfilePage = () => {
                         {/* Accordion Content */}
                         {personalInfoExpanded && (
                             <View className="px-4 pb-4 pt-2 border-t border-[#e5dfcf]">
-                                <View className="space-y-3">
+                                <View className="gap-3">
                                     {/* Name */}
                                     <View className="flex-row justify-between items-center">
                                         <Text className="text-sm text-slate-500">Full Name</Text>
@@ -137,10 +138,10 @@ const ProfilePage = () => {
                             className="w-full flex-row items-center justify-between p-4 active:scale-[0.99]"
                             onPress={() => {
                                 setProgressExpanded(!progressExpanded)
-                                Animated.timing(animation, {
+                                Animated.timing(progressAnimation, {
                                     toValue: progressExpanded ? 0 : 1,
                                     duration: 300,
-                                    useNativeDriver: false,
+                                    useNativeDriver: true,
                                 }).start()
                             }}
                         >
@@ -153,7 +154,7 @@ const ProfilePage = () => {
                             <Animated.View
                                 style={{
                                     transform: [{
-                                        rotate: animation.interpolate({
+                                        rotate: progressAnimation.interpolate({
                                             inputRange: [0, 1],
                                             outputRange: ['-90deg', '0deg'],
                                         }),
@@ -167,7 +168,7 @@ const ProfilePage = () => {
                         {/* Accordion Content */}
                         {progressExpanded && (
                             <View className="px-4 pb-4 pt-2 border-t border-[#e5dfcf]">
-                                <View className="space-y-3">
+                                <View className="gap-3">
                                     {/* Name */}
                                     <View className="flex-row justify-between items-center">
                                         <Text className="text-sm text-slate-500">Your Progress</Text>

@@ -1,8 +1,7 @@
+import CourseLessonsModal, { CourseData, Lesson } from '@/components/ui/CourseLessonsModal'
 import { MaterialIcons } from '@expo/vector-icons'
 import React, { useState } from 'react'
 import {
-    Dimensions,
-    Image,
     ImageBackground,
     Pressable,
     Animated as RNAnimated,
@@ -11,32 +10,57 @@ import {
     TouchableOpacity,
     View,
 } from 'react-native'
-import Animated, { FadeIn, FadeOut } from 'react-native-reanimated'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
-
-const { height: SCREEN_HEIGHT, width: SCREEN_WIDTH } = Dimensions.get('window')
-
-// Types for course data
-interface Course {
-    id: string
-    title: string
-    description: string
-    category: string
-    duration: string
-    lessons: number
-    progress: number
-    thumbnail: string
-    instructor: string
-    level: 'Beginner' | 'Intermediate' | 'Advanced'
-    content: string
-}
 
 const MyCoursesPage = () => {
     const insets = useSafeAreaInsets()
-    const [selectedCourse, setSelectedCourse] = useState<Course | null>(null)
+    const [selectedCourse, setSelectedCourse] = useState<CourseData | null>(null)
 
-    // Course data
-    const courses: Course[] = [
+    // Helper to generate lessons for each course based on progress
+    const generateLessons = (courseId: string, totalLessons: number, progress: number): Lesson[] => {
+        const completedCount = Math.round((progress / 100) * totalLessons)
+        const lessonTypes: Lesson['type'][] = ['video', 'reading', 'quiz', 'practice']
+
+        return Array.from({ length: totalLessons }, (_, i) => {
+            const isCompleted = i < completedCount
+            const isLocked = i > completedCount
+
+            return {
+                id: `${courseId}-lesson-${i + 1}`,
+                title: `Lesson ${i + 1}: ${getLessonTitle(courseId, i)}`,
+                description: getLessonDescription(courseId, i),
+                duration: `${Math.floor(Math.random() * 30) + 10} min`,
+                type: lessonTypes[i % lessonTypes.length],
+                completed: isCompleted,
+                locked: isLocked,
+            }
+        })
+    }
+
+    const getLessonTitle = (courseId: string, index: number): string => {
+        const titles: Record<string, string[]> = {
+            '1': ['Triage Basics', 'Cardiac Emergencies', 'Respiratory Distress', 'Trauma Assessment', 'Burn Treatment', 'Shock Management', 'Pediatric Emergencies', 'Toxicology', 'Disaster Preparedness', 'Airway Management', 'CPR Protocols', 'Post-Care Assessment'],
+            '2': ['Heart Anatomy', 'Circulatory System', 'Common Arrhythmias', 'Hypertension', 'Coronary Artery Disease', 'Heart Failure', 'Valvular Disorders', 'Diagnostic Tests', 'ECG Basics', 'Medications', 'Lifestyle Factors', 'Risk Assessment', 'Prevention Strategies', 'Case Studies', 'Advanced Topics', 'Research Methods', 'Clinical Practice', 'Final Review'],
+            '3': ['Neuroanatomy Intro', 'CNS Structure', 'PNS Overview', 'Brain Lobes', 'Neurotransmitters', 'Motor Pathways', 'Sensory Systems', 'Reflex Arcs', 'Stroke Assessment', 'Parkinson Disease', 'Multiple Sclerosis', 'Epilepsy', 'Headaches', 'Spinal Cord', 'Neuropathies', 'Dementia', 'Brain Imaging', 'Clinical Cases', 'Neuroplasticity', 'Advanced Topics'],
+            '4': ['Newborn Assessment', 'Developmental Milestones', 'Nutrition Basics', 'Vaccination Schedule', 'Common Illnesses', 'Fever Management', 'Respiratory Issues', 'Gastrointestinal', 'Skin Conditions', 'Behavioral Health', 'Adolescent Care', 'Growth Monitoring', 'Safety Guidelines', 'Emergency Protocols', 'Chronic Conditions'],
+            '5': ['ECG Fundamentals', 'Normal Sinus Rhythm', 'Arrhythmia Detection', 'Atrial Fibrillation', 'Ventricular Tachycardia', 'Bradycardia', 'Heart Blocks', 'STEMI Recognition', 'NSTEMI Patterns', 'Ischemia Changes'],
+        }
+        return titles[courseId]?.[index] || `Module ${index + 1}`
+    }
+
+    const getLessonDescription = (courseId: string, index: number): string => {
+        const descriptions: Record<string, string[]> = {
+            '1': ['Learn triage protocols', 'Cardiac emergency response', 'Respiratory distress scenarios', 'Trauma assessment', 'Burn treatment protocols', 'Shock management', 'Pediatric emergencies', 'Toxicological emergencies', 'Mass casualty preparedness', 'Advanced airway', 'CPR guidelines', 'Post-care protocols'],
+            '2': ['Cardiovascular anatomy', 'Blood circulation', 'Heart rhythm disorders', 'Hypertension management', 'Coronary artery disease', 'Heart failure treatment', 'Valve disorders', 'Diagnostic procedures', 'ECG interpretation', 'Cardiovascular medications', 'Lifestyle impact', 'Risk assessment', 'Prevention strategies', 'Patient cases', 'Research topics', 'Research methods', 'Clinical guidelines', 'Course review'],
+            '3': ['Nervous system anatomy', 'Central nervous system', 'Peripheral nervous system', 'Cerebral lobes', 'Neurotransmitter functions', 'Motor pathways', 'Sensory systems', 'Reflex mechanisms', 'Stroke protocols', 'Parkinson overview', 'MS fundamentals', 'Epilepsy disorders', 'Headache types', 'Spinal disorders', 'Neuropathy overview', 'Dementia diagnosis', 'Neuroimaging', 'Clinical presentations', 'Neuroplasticity', 'Advanced neuroscience'],
+            '4': ['Newborn assessment', 'Developmental milestones', 'Pediatric nutrition', 'Vaccination schedules', 'Childhood illnesses', 'Fever management', 'Respiratory conditions', 'GI disorders', 'Skin conditions', 'Behavioral health', 'Adolescent health', 'Growth monitoring', 'Safety guidelines', 'Emergency scenarios', 'Chronic conditions'],
+            '5': ['Electrocardiography intro', 'Normal sinus rhythm', 'Arrhythmia identification', 'Atrial fib recognition', 'Ventricular tachycardia', 'Bradycardia assessment', 'Heart block patterns', 'STEMI identification', 'NSTEMI findings', 'Ischemia detection'],
+        }
+        return descriptions[courseId]?.[index] || `Content for lesson ${index + 1}`
+    }
+
+    // Course data with lessons
+    const courses: CourseData[] = [
         {
             id: '1',
             title: 'Emergency Medicine Protocols',
@@ -49,6 +73,7 @@ const MyCoursesPage = () => {
             instructor: 'Dr. Sarah Johnson',
             level: 'Intermediate',
             content: 'This comprehensive course covers essential emergency medicine protocols including triage procedures, cardiac emergencies, respiratory distress, trauma management, and disaster preparedness. Learn evidence-based approaches to critical care situations.',
+            lessonsList: generateLessons('1', 12, 65),
         },
         {
             id: '2',
@@ -62,6 +87,7 @@ const MyCoursesPage = () => {
             instructor: 'Dr. Michael Chen',
             level: 'Beginner',
             content: 'Explore the fundamentals of cardiovascular medicine including anatomy, common cardiac conditions, diagnostic techniques, and treatment options. Perfect for medical students and junior residents.',
+            lessonsList: generateLessons('2', 18, 40),
         },
         {
             id: '3',
@@ -75,6 +101,7 @@ const MyCoursesPage = () => {
             instructor: 'Dr. Emily Roberts',
             level: 'Advanced',
             content: 'An in-depth exploration of the nervous system covering neuroanatomy, neurophysiology, common neurological disorders, and advanced diagnostic techniques. Designed for senior residents and practicing physicians.',
+            lessonsList: generateLessons('3', 20, 20),
         },
         {
             id: '4',
@@ -88,6 +115,7 @@ const MyCoursesPage = () => {
             instructor: 'Dr. Lisa Park',
             level: 'Beginner',
             content: 'Comprehensive pediatric care covering developmental milestones, common childhood illnesses, vaccination schedules, and pediatric emergency protocols. Essential for family practitioners and pediatricians.',
+            lessonsList: generateLessons('4', 15, 85),
         },
         {
             id: '5',
@@ -101,10 +129,11 @@ const MyCoursesPage = () => {
             instructor: 'Dr. James Wilson',
             level: 'Intermediate',
             content: 'Learn to interpret electrocardiograms with confidence. Covers normal sinus rhythm, arrhythmias, myocardial infarction patterns, and conduction abnormalities. Includes practice tracings and case studies.',
+            lessonsList: generateLessons('5', 10, 50),
         },
     ]
 
-    const getLevelColor = (level: Course['level']) => {
+    const getLevelColor = (level: CourseData['level']) => {
         switch (level) {
             case 'Beginner':
                 return 'bg-green-100 text-green-700'
@@ -115,12 +144,12 @@ const MyCoursesPage = () => {
         }
     }
 
-    const CourseCard = ({ course, onPress }: { course: Course; onPress: () => void }) => {
+    const CourseCard = ({ course, onPress }: { course: CourseData; onPress: () => void }) => {
         const scale = React.useRef(new RNAnimated.Value(1)).current
 
         const handlePressIn = () => {
             RNAnimated.spring(scale, {
-                toValue: 0.94,
+                toValue: 0.96,
                 useNativeDriver: true,
             }).start()
         }
@@ -243,122 +272,22 @@ const MyCoursesPage = () => {
                 </View>
             </ScrollView>
 
-            {/* Expanded Course Modal */}
-            {selectedCourse && (
-                <Animated.View
-                    entering={FadeIn.duration(300)}
-                    exiting={FadeOut.duration(300)}
-                    className="absolute inset-0 z-50 bg-brand-bg"
-                    style={{ paddingTop: insets.top }}
-                >
-                    {/* Close Button */}
-                    <TouchableOpacity
-                        onPress={() => setSelectedCourse(null)}
-                        className="absolute top-12 right-4 z-10 w-10 h-10 bg-white rounded-full items-center justify-center shadow-lg"
-                        style={{ top: insets.top + 16 }}
-                    >
-                        <MaterialIcons name="close" size={24} color="#7b011e" />
-                    </TouchableOpacity>
-
-                    <ScrollView className="flex-1">
-                        {/* Hero Image */}
-                        <View className="relative h-64">
-                            <Image
-                                source={{ uri: selectedCourse.thumbnail }}
-                                className="w-full h-full"
-                                resizeMode="cover"
-                            />
-                            <View className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-                            <View className="absolute bottom-4 left-4 right-4">
-                                <View className="flex-row items-center gap-2 mb-2">
-                                    <Text className="text-white/90 text-xs font-semibold uppercase bg-[#7b011e] px-2 py-1 rounded-full">
-                                        {selectedCourse.category}
-                                    </Text>
-                                    <View
-                                        className={`px-2 py-1 rounded-full ${getLevelColor(selectedCourse.level)}`}
-                                    >
-                                        <Text className="text-[10px] font-semibold">
-                                            {selectedCourse.level}
-                                        </Text>
-                                    </View>
-                                </View>
-                                <Text className="text-white text-xl font-bold" numberOfLines={2}>
-                                    {selectedCourse.title}
-                                </Text>
-                            </View>
-                        </View>
-
-                        {/* Content */}
-                        <View className="flex-1 bg-white rounded-t-3xl -mt-6 p-6 min-h-[400px]">
-                            {/* Stats */}
-                            <View className="flex-row justify-between mb-6">
-                                <View className="items-center">
-                                    <MaterialIcons name="schedule" size={20} color="#7b011e" />
-                                    <Text className="text-xs text-slate-500 mt-1">
-                                        {selectedCourse.duration}
-                                    </Text>
-                                </View>
-                                <View className="items-center">
-                                    <MaterialIcons name="play-circle" size={20} color="#7b011e" />
-                                    <Text className="text-xs text-slate-500 mt-1">
-                                        {selectedCourse.lessons} lessons
-                                    </Text>
-                                </View>
-                                <View className="items-center">
-                                    <MaterialIcons name="person" size={20} color="#7b011e" />
-                                    <Text className="text-xs text-slate-500 mt-1" numberOfLines={1}>
-                                        {selectedCourse.instructor}
-                                    </Text>
-                                </View>
-                            </View>
-
-                            {/* Progress Section */}
-                            <View className="mb-6">
-                                <View className="flex-row justify-between items-center mb-2">
-                                    <Text className="text-sm font-bold text-slate-900">
-                                        Your Progress
-                                    </Text>
-                                    <Text className="text-sm font-bold text-[#7b011e]">
-                                        {selectedCourse.progress}%
-                                    </Text>
-                                </View>
-                                <View className="h-2 w-full bg-slate-100 rounded-full overflow-hidden">
-                                    <View
-                                        className="h-full bg-[#7b011e] rounded-full"
-                                        style={{ width: `${selectedCourse.progress}%` }}
-                                    />
-                                </View>
-                            </View>
-
-                            {/* Description */}
-                            <View className="mb-6">
-                                <Text className="text-sm font-bold text-slate-900 mb-2">
-                                    About this course
-                                </Text>
-                                <Text className="text-sm text-slate-600 leading-relaxed">
-                                    {selectedCourse.content}
-                                </Text>
-                            </View>
-
-                            {/* Continue Button */}
-                            <TouchableOpacity className="w-full py-4 bg-[#7b011e] rounded-2xl flex-row items-center justify-center gap-2 shadow-lg">
-                                <MaterialIcons name="play-arrow" size={24} color="white" />
-                                <Text className="text-white font-bold text-base">Continue Learning</Text>
-                            </TouchableOpacity>
-                        </View>
-                    </ScrollView>
-                </Animated.View>
-            )}
-
-            {/* Backdrop */}
-            {selectedCourse && (
-                <Animated.View
-                    entering={FadeIn.duration(200)}
-                    exiting={FadeOut.duration(200)}
-                    className="absolute inset-0 bg-black/50 z-40"
-                    pointerEvents="none"
-                />
-            )}
+            {/* Course Lessons Modal */}
+            <CourseLessonsModal
+                visible={!!selectedCourse}
+                course={selectedCourse}
+                onClose={() => setSelectedCourse(null)}
+                onLessonSelect={(lesson) => {
+                    console.log('Selected lesson:', lesson.title)
+                    // TODO: Navigate to lesson player or open lesson content
+                    setSelectedCourse(null)
+                }}
+                onContinue={() => {
+                    console.log('Continue learning')
+                    // TODO: Navigate to the next uncompleted lesson
+                    setSelectedCourse(null)
+                }}
+            />
         </View>
     )
 }
