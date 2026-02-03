@@ -1,7 +1,12 @@
-import CourseLessonsModal, { CourseData, Lesson } from '@/components/ui/CourseLessonsModal'
-import { MaterialIcons } from '@expo/vector-icons'
-import React, { useState } from 'react'
+import CourseLessonsModal, { CourseData, Lesson } from '@/components/ui/CourseLessonsModal';
+import SecureVideoPlayer from '@/components/ui/SecureVideoPlayer';
+import VideoPlaybackChoice from '@/components/ui/VideoPlaybackChoice';
+import { MaterialIcons } from '@expo/vector-icons';
+import { documentDirectory, downloadAsync, getInfoAsync } from 'expo-file-system';
+import React, { useState } from 'react';
 import {
+    ActivityIndicator,
+    Alert,
     ImageBackground,
     Pressable,
     Animated as RNAnimated,
@@ -9,12 +14,67 @@ import {
     Text,
     TouchableOpacity,
     View,
-} from 'react-native'
-import { useSafeAreaInsets } from 'react-native-safe-area-context'
+} from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const MyCoursesPage = () => {
     const insets = useSafeAreaInsets()
     const [selectedCourse, setSelectedCourse] = useState<CourseData | null>(null)
+    const [selectedLesson, setSelectedLesson] = useState<Lesson | null>(null)
+    const [showPlaybackChoice, setShowPlaybackChoice] = useState(false)
+    const [showVideoPlayer, setShowVideoPlayer] = useState(false)
+    const [videoUri, setVideoUri] = useState<string | null>(null);
+    const [isDownloading, setIsDownloading] = useState(false);
+
+    const SAMPLE_VIDEO_URL = 'https://d23dyxeqlo5psv.cloudfront.net/big_buck_bunny.mp4';
+
+    const handleDownloadAndPlay = async () => {
+        if (!selectedLesson) return;
+
+        // Define a local path
+        const fileName = `lesson-${selectedLesson.id}.mp4`;
+        const fileUri = documentDirectory + fileName;
+
+        try {
+            // Check if exists
+            const fileInfo = await getInfoAsync(fileUri);
+            if (fileInfo.exists) {
+                console.log('File already exists, playing local:', fileUri);
+                setVideoUri(fileUri);
+                setShowPlaybackChoice(false);
+                setShowVideoPlayer(true);
+                return;
+            }
+
+            // Download
+            setIsDownloading(true);
+
+            const downloadRes = await downloadAsync(
+                SAMPLE_VIDEO_URL,
+                fileUri
+            );
+
+            setIsDownloading(false);
+            if (downloadRes.status === 200) {
+                setVideoUri(downloadRes.uri);
+                setShowPlaybackChoice(false);
+                setShowVideoPlayer(true);
+            } else {
+                Alert.alert('Download Failed', 'Could not download video.');
+            }
+
+        } catch (e) {
+            setIsDownloading(false);
+            console.error(e);
+            Alert.alert('Error', 'An error occurred while downloading.');
+        }
+    };
+
+    const handleStream = () => {
+        setVideoUri(SAMPLE_VIDEO_URL);
+        setShowPlaybackChoice(false);
+        setShowVideoPlayer(true);
+    };
 
     // Helper to generate lessons for each course based on progress
     const generateLessons = (courseId: string, totalLessons: number, progress: number): Lesson[] => {
@@ -218,19 +278,21 @@ const MyCoursesPage = () => {
                                 </View>
                             </View>
                         </View>
-
-                        {/* Continue Button */}
-                        {/* <TouchableOpacity
-                            onPress={onPress}
-                            className="px-6 py-2 bg-[#7b011e] rounded-l-2xl justify-center"
-                        >
-                            <MaterialIcons name="play-arrow" size={20} color="white" />
-                        </TouchableOpacity> */}
                     </View>
                 </Pressable>
             </RNAnimated.View>
         )
     }
+
+    const handleLessonSelect = (lesson: Lesson) => {
+        setSelectedLesson(lesson);
+        if (lesson.type === 'video') {
+            setShowPlaybackChoice(true);
+        } else {
+            // For now, only video is handled per request, but we can expand.
+            Alert.alert('Content', 'This lesson content is not a video. Coming soon.');
+        }
+    };
 
     return (
         <View className="flex-1 bg-brand-bg">
@@ -255,10 +317,6 @@ const MyCoursesPage = () => {
                     <Text className="text-slate-600 text-sm font-semibold">
                         {courses.length} Courses in progress
                     </Text>
-                    {/* <TouchableOpacity className="flex-row items-center gap-1">
-                        <MaterialIcons name="filter-list" size={18} color="#7b011e" />
-                        <Text className="text-[#7b011e] text-xs font-semibold">Filter</Text>
-                    </TouchableOpacity> */}
                 </View>
 
                 <View className="gap-3">
@@ -277,16 +335,48 @@ const MyCoursesPage = () => {
                 visible={!!selectedCourse}
                 course={selectedCourse}
                 onClose={() => setSelectedCourse(null)}
-                onLessonSelect={(lesson) => {
-                    console.log('Selected lesson:', lesson.title)
-                    // TODO: Navigate to lesson player or open lesson content
-                    setSelectedCourse(null)
-                }}
+                onLessonSelect={handleLessonSelect}
                 onContinue={() => {
-                    console.log('Continue learning')
-                    // TODO: Navigate to the next uncompleted lesson
-                    setSelectedCourse(null)
+                    if (selectedCourse) {
+                        const next = selectedCourse.lessonsList.find(l => !l.completed && !l.locked);
+                        if (next) handleLessonSelect(next);
+                    }
                 }}
+            />
+
+            {/* Playback Choice Modal */}
+            <VideoPlaybackChoice
+                visible={showPlaybackChoice && !isDownloading}
+                onCancel={() => {
+                    setShowPlaybackChoice(false);
+                    setSelectedLesson(null);
+                }}
+                onDownload={handleDownloadAndPlay}
+                onStream={handleStream}
+                title={selectedLesson?.title}
+            />
+
+            {/* Loading / Downloading Indicator */}
+            {isDownloading && (
+                <View className="absolute inset-0 z-50 justify-center items-center bg-black/60">
+                    <View className="bg-white p-6 rounded-2xl items-center shadow-lg">
+                        <ActivityIndicator size="large" color="#7b011e" />
+                        <Text className="text-gray-800 font-bold mt-4">Downloading Video...</Text>
+                        <Text className="text-gray-500 text-xs mt-1">Please wait</Text>
+                    </View>
+                </View>
+            )}
+
+            {/* Secure Video Player */}
+            <SecureVideoPlayer
+                visible={showVideoPlayer}
+                source={videoUri ? { uri: videoUri } : undefined}
+                onClose={() => {
+                    setShowVideoPlayer(false);
+                    setSelectedLesson(null);
+                    setVideoUri(null);
+                }}
+                title={selectedLesson?.title}
             />
         </View>
     )
